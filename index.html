@@ -1,0 +1,501 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1">
+<title>Untuk Kamu</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,500;0,600;1,500&family=Dancing+Script:wght@600&family=Jost:wght@300;400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --bg-deep:#2B1220;
+    --bg-mid:#3D1B2E;
+    --gold:#E8B86D;
+    --gold-deep:#D9A24E;
+    --rose:#C98A9C;
+    --seal-red:#8C2F39;
+    --paper:#FBF3E7;
+    --paper-shadow:rgba(43,18,32,0.55);
+    --ink:#3A2432;
+    --ink-soft:#6B4657;
+    --envelope-body:#C7A375;
+    --envelope-body-light:#DDBF93;
+    --envelope-flap-color:#B08F63;
+    --font-display:'Cormorant Garamond', Georgia, serif;
+    --font-body:'Jost','Segoe UI',sans-serif;
+    --font-script:'Dancing Script', cursive;
+  }
+
+  *{ box-sizing:border-box; }
+
+  html,body{
+    margin:0; height:100%;
+    background:radial-gradient(120% 140% at 50% 0%, var(--bg-mid) 0%, var(--bg-deep) 60%);
+    font-family:var(--font-body);
+    color:var(--paper);
+    overflow-x:hidden;
+  }
+
+  /* ---------- partikel bara mengambang ---------- */
+  .embers{
+    position:fixed; inset:0; pointer-events:none; overflow:hidden; z-index:1;
+  }
+  .ember{
+    position:absolute; bottom:-10px; border-radius:50%;
+    background:radial-gradient(circle, var(--gold) 0%, rgba(232,184,109,0) 70%);
+    opacity:0; animation-name:floatUp; animation-timing-function:ease-in;
+    animation-iteration-count:infinite;
+  }
+  @keyframes floatUp{
+    0%{ transform:translateY(0) scale(1); opacity:0; }
+    12%{ opacity:.85; }
+    85%{ opacity:.4; }
+    100%{ transform:translateY(-105vh) scale(.5); opacity:0; }
+  }
+
+  /* ---------- layout umum ---------- */
+  .screen{
+    position:relative; z-index:2;
+    min-height:100vh; width:100%;
+    display:flex; align-items:center; justify-content:center;
+    padding:32px 20px;
+  }
+  #letter-screen{ display:none; opacity:0; transition:opacity .7s ease; }
+  #letter-screen.visible{ opacity:1; }
+
+  /* ---------- layar amplop ---------- */
+  .envelope-wrap{ text-align:center; perspective:900px; }
+
+  .envelope{
+    position:relative;
+    width:240px; height:150px;
+    background:linear-gradient(180deg, var(--envelope-body-light), var(--envelope-body));
+    border:none; border-radius:6px; cursor:pointer; padding:0;
+    box-shadow:0 22px 45px rgba(0,0,0,.45);
+    animation:gentleFloat 4.5s ease-in-out infinite;
+  }
+  .envelope-flap{
+    position:absolute; top:0; left:0; width:0; height:0;
+    border-left:120px solid transparent;
+    border-right:120px solid transparent;
+    border-top:66px solid var(--envelope-flap-color);
+    transform-origin:top center; backface-visibility:hidden;
+    transition:transform .7s cubic-bezier(.4,0,.2,1), opacity .5s ease .15s;
+  }
+  .envelope.open .envelope-flap{ transform:rotateX(180deg); opacity:0; }
+  .envelope-seal{
+    position:absolute; top:50px; left:50%; transform:translate(-50%,-50%);
+    width:38px; height:38px; border-radius:50%;
+    background:var(--seal-red); color:var(--gold);
+    display:flex; align-items:center; justify-content:center; font-size:16px;
+    box-shadow:0 2px 6px rgba(0,0,0,.4), inset 0 -2px 4px rgba(0,0,0,.35);
+  }
+  @keyframes gentleFloat{
+    0%,100%{ transform:translateY(0); }
+    50%{ transform:translateY(-8px); }
+  }
+
+  .envelope-hint{
+    font-family:var(--font-display); font-size:22px; font-style:italic;
+    color:var(--paper); margin:26px 0 6px;
+  }
+  .envelope-sub{
+    font-size:13px; color:var(--rose); letter-spacing:.02em; margin:0;
+  }
+
+  .envelope-screen.fade-out{
+    opacity:0; transform:scale(.96); pointer-events:none;
+    transition:opacity .6s ease, transform .6s ease;
+  }
+
+  /* ---------- layar surat ---------- */
+  .mute-btn{
+    position:fixed; top:18px; right:18px; z-index:20;
+    width:42px; height:42px; border-radius:50%;
+    background:rgba(251,243,231,.12); border:1px solid rgba(251,243,231,.35);
+    color:var(--paper); font-size:18px; cursor:pointer;
+    display:flex; align-items:center; justify-content:center;
+  }
+
+  .letter{
+    width:min(92vw, 480px);
+    background:var(--paper);
+    color:var(--ink);
+    border-radius:3px;
+    padding:40px 32px 36px;
+    box-shadow:0 30px 60px var(--paper-shadow);
+    transform:rotate(-0.6deg);
+    position:relative;
+  }
+  .letter::before{
+    content:''; position:absolute; left:6%; right:6%; top:52%;
+    height:1px; background:linear-gradient(90deg, transparent, rgba(58,36,50,.12), transparent);
+  }
+
+  .letter-eyebrow{
+    font-family:var(--font-body); font-style:italic; font-size:15px;
+    color:var(--ink-soft); margin:0 0 8px;
+  }
+  .letter-title{
+    font-family:var(--font-display); font-weight:600; font-size:clamp(28px,7vw,36px);
+    margin:0 0 20px; color:var(--ink); line-height:1.15;
+  }
+  .letter-body p{
+    font-size:16px; line-height:1.75; margin:0 0 14px; color:var(--ink);
+    max-width:65ch;
+  }
+
+  .question-row{ margin-top:28px; transition:opacity .35s ease, transform .35s ease; }
+  .question-row.fade-out-q{ opacity:0; transform:translateY(-8px); pointer-events:none; }
+  .question-text{
+    font-family:var(--font-display); font-size:20px; font-style:italic;
+    margin:0 0 18px; color:var(--ink);
+  }
+
+  .buttons{ display:flex; gap:16px; flex-wrap:wrap; align-items:center; }
+
+  .btn{
+    font-family:var(--font-body); font-weight:500; font-size:15px;
+    padding:13px 26px; border-radius:999px; cursor:pointer;
+    transition:transform .2s ease, background .2s ease, left .35s cubic-bezier(.34,1.56,.64,1), top .35s cubic-bezier(.34,1.56,.64,1);
+  }
+  .btn-yes{
+    background:var(--gold); border:none; color:var(--ink);
+    animation:pulseGlow 2.6s ease-in-out infinite;
+  }
+  .btn-yes:hover{ background:var(--gold-deep); }
+  @keyframes pulseGlow{
+    0%,100%{ box-shadow:0 0 0 0 rgba(232,184,109,.55); }
+    50%{ box-shadow:0 0 18px 7px rgba(232,184,109,.28); }
+  }
+
+  .btn-no{
+    background:transparent; border:1.5px solid var(--rose); color:var(--ink-soft);
+    position:relative;
+  }
+
+  /* ---------- hati yang meletup ---------- */
+  .burst-heart{
+    position:fixed; left:0; top:0; pointer-events:none; z-index:50;
+    color:var(--seal-red); transform:translate(-50%,-50%);
+    animation:heartBurst .9s ease-out forwards;
+  }
+  @keyframes heartBurst{
+    0%{ transform:translate(-50%,-50%) scale(.6) rotate(0deg); opacity:1; }
+    100%{ transform:translate(calc(-50% + var(--dx)), calc(-50% + var(--dy))) scale(1.15) rotate(var(--rot)); opacity:0; }
+  }
+
+  /* ---------- pesan akhir ---------- */
+  .final-message{
+    display:none; margin-top:26px; transform:translateY(16px); opacity:0;
+    transition:opacity .6s ease, transform .6s ease;
+  }
+  .final-message.visible{ opacity:1; transform:translateY(0); }
+  .final-message p{ font-size:16px; line-height:1.75; margin:0 0 12px; color:var(--ink); }
+  .signature{
+    font-family:var(--font-script); font-size:26px; color:var(--ink-soft);
+    margin-top:14px;
+  }
+
+  @media (prefers-reduced-motion: reduce){
+    .ember, .envelope, .btn-yes{ animation:none !important; }
+    *{ transition-duration:.01ms !important; }
+  }
+</style>
+</head>
+<body>
+
+  <div class="embers" id="embers" aria-hidden="true"></div>
+
+  <!-- LAYAR AMPLOP -->
+  <section class="screen envelope-screen" id="envelope-screen">
+    <div class="envelope-wrap">
+      <button class="envelope" id="envelope-btn" aria-label="Buka surat">
+        <span class="envelope-flap"></span>
+        <span class="envelope-seal">&#10084;</span>
+      </button>
+      <p class="envelope-hint" id="envelope-label">Sepucuk surat untuk kamu</p>
+      <p class="envelope-sub">ketuk amplopnya, ya</p>
+    </div>
+  </section>
+
+  <!-- LAYAR SURAT -->
+  <section class="screen" id="letter-screen">
+    <button class="mute-btn" id="mute-btn" aria-label="Matikan atau nyalakan musik">&#128266;</button>
+    <div class="letter">
+      <p class="letter-eyebrow" id="letter-eyebrow"></p>
+      <h1 class="letter-title" id="letter-title"></h1>
+      <div class="letter-body" id="letter-body"></div>
+
+      <div class="question-row" id="question-row">
+        <p class="question-text" id="question-text"></p>
+        <div class="buttons">
+          <button class="btn btn-yes" id="yes-btn">Iya</button>
+          <button class="btn btn-no" id="no-btn">Tidak</button>
+        </div>
+      </div>
+
+      <div class="final-message" id="final-message">
+        <div id="final-message-body"></div>
+        <p class="signature" id="signature"></p>
+      </div>
+    </div>
+  </section>
+
+  <audio id="bg-music" loop preload="auto"></audio>
+
+<script>
+/* =========================================================================
+   BAGIAN INI YANG PERLU KAMU EDIT
+   Ganti teks di bawah sesuai ceritamu. Simpan file, lalu buka lagi di
+   browser untuk lihat hasilnya.
+   ========================================================================= */
+const CONFIG = {
+  namaPanggilan: "qila",   // panggilan / nama pacarmu
+  namaPengirim: "from maduu",       // namamu / panggilanmu
+
+  labelAmplop: "gomen",
+
+  judulSurat: "sorry",
+
+  paragrafSurat: [
+    "maap kemarin,eh aku buatnya malam sih jdi harusnya hari ini tpi mungkin kmu liat bsok.",
+    "maaf aku nyuekin kmu seharian, my bad .",
+    "walaupun agak telat,di maapin kan?."
+  ],
+
+  pertanyaan: " 'Setiap kali kita memaafkan orang lain, berarti kita sedang menambah berkah. Semakin kita berlapang dada, maka berkah yang kita peroleh akan semakin besar'  -Master Cheng Yen",
+
+  pesanSetelahIya: [
+    "yattaaaa,tengyuu gk di ulang lgi kok,klo ulang janji lgi😁.",
+    "cukup sekian tengyu💖💖💖💖💖💖"
+  ],
+
+  // teks tombol "Tidak" akan berganti setiap kali berhasil kabur
+  teksTombolTidakBerurutan: [
+    "Tidak",
+    "Yakin?",
+    "Coba lagi deh",
+    "Kok gitu :(",
+    "Jangan gitu dong",
+    "Tidak enggak ada di sini"
+  ],
+
+  // nama file suara — taruh file-file ini satu folder dengan file HTML ini
+  audio: {
+    musikLatar: "musik.mp3",
+    bukaSurat: "buka-surat.mp3",
+    tombolIya: "iya.mp3",
+    tombolTidak: "kabur.mp3"
+  }
+};
+/* ========================================================================= */
+
+document.addEventListener('DOMContentLoaded', () => {
+  document.title = `Untuk ${CONFIG.namaPanggilan}`;
+  document.getElementById('envelope-label').textContent = CONFIG.labelAmplop;
+  document.getElementById('letter-eyebrow').textContent = `Untuk ${CONFIG.namaPanggilan},`;
+  document.getElementById('letter-title').textContent = CONFIG.judulSurat;
+  document.getElementById('letter-body').innerHTML = CONFIG.paragrafSurat.map(p => `<p>${p}</p>`).join('');
+  document.getElementById('question-text').textContent = CONFIG.pertanyaan;
+  document.getElementById('final-message-body').innerHTML = CONFIG.pesanSetelahIya.map(p => `<p>${p}</p>`).join('');
+  document.getElementById('signature').textContent = `— ${CONFIG.namaPengirim}`;
+
+  const bgMusic = document.getElementById('bg-music');
+  bgMusic.src = CONFIG.audio.musikLatar;
+  bgMusic.volume = 0.55;
+
+  buildEmbers();
+  setupEnvelope(bgMusic);
+  setupQuestion();
+});
+
+/* partikel bara mengambang di latar belakang */
+function buildEmbers(){
+  const wrap = document.getElementById('embers');
+  const reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  if (reduce) return;
+  const count = 20;
+  for (let i = 0; i < count; i++){
+    const e = document.createElement('div');
+    e.className = 'ember';
+    const size = 3 + Math.random() * 4;
+    e.style.width = size + 'px';
+    e.style.height = size + 'px';
+    e.style.left = Math.random() * 100 + 'vw';
+    e.style.animationDuration = (9 + Math.random() * 8) + 's';
+    e.style.animationDelay = (Math.random() * 12) + 's';
+    wrap.appendChild(e);
+  }
+}
+
+function playSound(src){
+  if (!src) return;
+  try{
+    const a = new Audio(src);
+    a.volume = 0.8;
+    a.play().catch(() => {});
+  }catch(e){}
+}
+
+/* buka amplop -> pindah ke layar surat, mulai musik */
+function setupEnvelope(bgMusic){
+  const envelopeBtn = document.getElementById('envelope-btn');
+  const envelopeScreen = document.getElementById('envelope-screen');
+  const letterScreen = document.getElementById('letter-screen');
+  let opened = false;
+
+  envelopeBtn.addEventListener('click', () => {
+    if (opened) return;
+    opened = true;
+
+    playSound(CONFIG.audio.bukaSurat);
+    bgMusic.play().catch(() => {});
+
+    envelopeBtn.classList.add('open');
+
+    setTimeout(() => envelopeScreen.classList.add('fade-out'), 550);
+
+    setTimeout(() => {
+      envelopeScreen.style.display = 'none';
+      letterScreen.style.display = 'flex';
+      requestAnimationFrame(() => {
+        letterScreen.classList.add('visible');
+        window.__letterVisible = true;
+      });
+    }, 1150);
+  });
+
+  document.getElementById('mute-btn').addEventListener('click', () => {
+    bgMusic.muted = !bgMusic.muted;
+    document.getElementById('mute-btn').textContent = bgMusic.muted ? '🔇' : '🔊';
+  });
+}
+
+/* logika tombol Iya / Tidak */
+function setupQuestion(){
+  const yesBtn = document.getElementById('yes-btn');
+  const noBtn = document.getElementById('no-btn');
+  const questionRow = document.getElementById('question-row');
+  const finalMessage = document.getElementById('final-message');
+
+  let answered = false;
+  let noFixed = false;
+  let dodgeCount = 0;
+  let dodgeCooldown = false;
+  let yesScale = 1;
+
+  function ensureFixed(){
+    if (noFixed) return;
+    const rect = noBtn.getBoundingClientRect();
+    noBtn.style.position = 'fixed';
+    noBtn.style.left = rect.left + 'px';
+    noBtn.style.top = rect.top + 'px';
+    noBtn.style.margin = '0';
+    noFixed = true;
+  }
+
+  function growYesButton(){
+    yesScale = Math.min(yesScale + 0.035, 1.3);
+    yesBtn.style.transform = `scale(${yesScale.toFixed(3)})`;
+  }
+
+  function moveNoButton(){
+    dodgeCount++;
+    const idx = Math.min(dodgeCount, CONFIG.teksTombolTidakBerurutan.length - 1);
+    noBtn.textContent = CONFIG.teksTombolTidakBerurutan[idx];
+
+    requestAnimationFrame(() => {
+      const rect = noBtn.getBoundingClientRect();
+      const margin = 16;
+      const maxX = Math.max(margin, window.innerWidth - rect.width - margin);
+      const maxY = Math.max(margin, window.innerHeight - rect.height - margin);
+      const newX = margin + Math.random() * (maxX - margin);
+      const newY = margin + Math.random() * (maxY - margin);
+      noBtn.style.left = newX + 'px';
+      noBtn.style.top = newY + 'px';
+    });
+
+    playSound(CONFIG.audio.tombolTidak);
+    growYesButton();
+  }
+
+  function tryDodge(clientX, clientY){
+    if (answered || dodgeCooldown || !window.__letterVisible) return;
+    const rect = noBtn.getBoundingClientRect();
+    const cx = rect.left + rect.width / 2;
+    const cy = rect.top + rect.height / 2;
+    const dist = Math.hypot(clientX - cx, clientY - cy);
+    const threshold = noFixed ? 95 : 75;
+    if (dist < threshold){
+      ensureFixed();
+      moveNoButton();
+      dodgeCooldown = true;
+      setTimeout(() => dodgeCooldown = false, 350);
+    }
+  }
+
+  document.addEventListener('mousemove', (e) => tryDodge(e.clientX, e.clientY));
+  document.addEventListener('touchmove', (e) => {
+    const t = e.touches[0];
+    if (t) tryDodge(t.clientX, t.clientY);
+  }, { passive: true });
+
+  noBtn.addEventListener('touchstart', (e) => {
+    e.preventDefault();
+    ensureFixed();
+    moveNoButton();
+  }, { passive: false });
+
+  noBtn.addEventListener('click', (e) => {
+    e.preventDefault();
+    ensureFixed();
+    moveNoButton();
+  });
+
+  function spawnHearts(originEl){
+    const rect = originEl.getBoundingClientRect();
+    const originX = rect.left + rect.width / 2;
+    const originY = rect.top + rect.height / 2;
+    const reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+    const count = reduce ? 0 : 14;
+
+    for (let i = 0; i < count; i++){
+      const heart = document.createElement('span');
+      heart.className = 'burst-heart';
+      heart.textContent = '♥';
+      const angle = Math.random() * Math.PI * 2;
+      const distance = 60 + Math.random() * 90;
+      const dx = Math.cos(angle) * distance;
+      const dy = Math.sin(angle) * distance - 40;
+      const rot = (Math.random() * 60 - 30) + 'deg';
+      heart.style.setProperty('--dx', dx + 'px');
+      heart.style.setProperty('--dy', dy + 'px');
+      heart.style.setProperty('--rot', rot);
+      heart.style.left = originX + 'px';
+      heart.style.top = originY + 'px';
+      heart.style.fontSize = (14 + Math.random() * 14) + 'px';
+      document.body.appendChild(heart);
+      heart.addEventListener('animationend', () => heart.remove());
+    }
+  }
+
+  yesBtn.addEventListener('click', () => {
+    if (answered) return;
+    answered = true;
+
+    playSound(CONFIG.audio.tombolIya);
+    spawnHearts(yesBtn);
+
+    questionRow.classList.add('fade-out-q');
+    setTimeout(() => {
+      questionRow.style.display = 'none';
+      finalMessage.style.display = 'block';
+      requestAnimationFrame(() => finalMessage.classList.add('visible'));
+    }, 350);
+  });
+}
+</script>
+</body>
+</html>
